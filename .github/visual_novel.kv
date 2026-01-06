@@ -1,0 +1,414 @@
+#:import dp kivy.metrics.dp
+#:set PRIMARY_COLOR (0.2, 0.4, 0.8, 1)
+#:set SECONDARY_COLOR (0.9, 0.3, 0.3, 1)
+#:set BG_COLOR (0.95, 0.95, 0.97, 1)
+#:set TEXT_COLOR (0.1, 0.1, 0.1, 1)
+
+<CustomButton@Button>:
+    background_color: 0, 0, 0, 0
+    background_normal: ''
+    background_down: ''
+    color: 1, 1, 1, 1
+    font_size: dp(16)
+    bold: True
+    size_hint: 1, None
+    height: dp(50)
+    
+    canvas.before:
+        Color:
+            rgba: PRIMARY_COLOR
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10),]
+    
+    canvas.after:
+        Color:
+            rgba: 1, 1, 1, 0.2 if self.state == 'down' else 0
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10),]
+
+<DialogueLabel@Label>:
+    font_size: dp(18)
+    color: TEXT_COLOR
+    size_hint_y: None
+    height: self.texture_size[1] + dp(20)
+    text_size: self.width - dp(20), None
+    padding: dp(10), dp(10)
+    halign: 'left'
+    valign: 'middle'
+    markup: True
+
+<GameScreen>:
+    orientation: 'vertical'
+    
+    BoxLayout:
+        size_hint: 1, 0.2
+        padding: dp(10)
+        spacing: dp(5)
+        
+        # Панель статуса
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: dp(5)
+            
+            # Репутация
+            BoxLayout:
+                canvas.before:
+                    Color:
+                        rgba: 0.9, 0.7, 0.3, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(5),]
+                Label:
+                    text: f'Репутация: {root.game_logic.variables["reputation"]}'
+                    color: 1, 1, 1, 1
+                    bold: True
+                    font_size: dp(14)
+            
+            # Отношения с Алисой
+            BoxLayout:
+                canvas.before:
+                    Color:
+                        rgba: 1, 0.4, 0.6, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(5),]
+                Label:
+                    text: f'Алиса: {root.game_logic.variables["relationship_alice"]}'
+                    color: 1, 1, 1, 1
+                    bold: True
+                    font_size: dp(14)
+            
+            # Деньги
+            BoxLayout:
+                canvas.before:
+                    Color:
+                        rgba: 0.9, 0.8, 0.3, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(5),]
+                Label:
+                    text: f'Деньги: {root.game_logic.variables["money"]}'
+                    color: 1, 1, 1, 1
+                    bold: True
+                    font_size: dp(14)
+            
+            # Кнопка меню
+            CustomButton:
+                text: 'Меню'
+                size_hint_x: 0.2
+                background_color: SECONDARY_COLOR
+                on_press: app.show_menu()
+    
+    # Основная область игры
+    RelativeLayout:
+        id: game_area
+        
+        # Фон
+        Image:
+            id: background
+            source: root.background_image
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: 1, 1
+        
+        # Изображение персонажа
+        Image:
+            id: character_img
+            source: root.character_image
+            allow_stretch: True
+            keep_ratio: True
+            size_hint: None, 0.6
+            width: self.height * 0.75
+            pos_hint: {'center_x': 0.3, 'center_y': 0.5}
+            opacity: 1 if root.character_image else 0
+        
+        # Окно диалога
+        BoxLayout:
+            size_hint: 0.8, 0.4
+            pos_hint: {'center_x': 0.5, 'y': 0}
+            padding: dp(20)
+            spacing: dp(10)
+            
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.8
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15), dp(15), 0, 0]
+            
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: dp(10)
+                
+                # Имя персонажа
+                Label:
+                    id: character_name
+                    text: root.character_name
+                    color: 1, 1, 1, 1
+                    font_size: dp(22)
+                    bold: True
+                    size_hint_y: None
+                    height: dp(30)
+                    text_size: self.size
+                    halign: 'left'
+                
+                # Текст диалога
+                ScrollView:
+                    size_hint: 1, 1
+                    
+                    DialogueLabel:
+                        id: dialogue_text
+                        text: root.dialogue_text
+                        color: 1, 1, 1, 1
+                
+                # Кнопка продолжения
+                BoxLayout:
+                    size_hint: 1, None
+                    height: dp(50)
+                    spacing: dp(10)
+                    
+                    CustomButton:
+                        text: 'Продолжить >>'
+                        background_color: PRIMARY_COLOR
+                        on_press: root.advance_dialogue()
+                    
+                    CustomButton:
+                        text: 'Пропустить анимацию'
+                        background_color: (0.5, 0.5, 0.5, 1)
+                        size_hint_x: 0.4
+                        on_press: root.dialogue_animator.skip_animation(); root.update_dialogue_text()
+    
+    # Панель выбора (появляется когда нужно)
+    BoxLayout:
+        id: choice_panel
+        size_hint: 1, 0.3
+        padding: dp(20)
+        spacing: dp(10)
+        orientation: 'vertical'
+        opacity: 0
+        disabled: True
+        
+        Label:
+            text: 'Сделайте выбор:'
+            color: TEXT_COLOR
+            font_size: dp(20)
+            bold: True
+            size_hint_y: None
+            height: dp(30)
+        
+        GridLayout:
+            id: choices_grid
+            cols: 1
+            spacing: dp(10)
+            size_hint_y: 1
+
+<ChoiceButton@CustomButton>:
+    background_color: (0.3, 0.6, 0.9, 1)
+    font_size: dp(16)
+
+<MainMenuScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(50)
+        spacing: dp(30)
+        
+        Label:
+            text: 'ВИЗУАЛЬНАЯ НОВЕЛЛА'
+            font_size: dp(32)
+            bold: True
+            color: PRIMARY_COLOR
+            size_hint_y: None
+            height: dp(60)
+        
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: dp(15)
+            
+            CustomButton:
+                text: 'НОВАЯ ИГРА'
+                background_color: PRIMARY_COLOR
+                on_press: root.game_screen.game_logic.reset_game(); root.game_screen.load_scene(); app.root = root.game_screen
+            
+            CustomButton:
+                text: 'ПРОДОЛЖИТЬ'
+                background_color: PRIMARY_COLOR
+                on_press: 
+                    if root.game_screen.load_game(): 
+                        app.root = root.game_screen
+            
+            CustomButton:
+                text: 'НАСТРОЙКИ'
+                background_color: (0.5, 0.5, 0.5, 1)
+                on_press: app.show_settings()
+            
+            CustomButton:
+                text: 'ВЫХОД'
+                background_color: SECONDARY_COLOR
+                on_press: app.stop()
+
+<SettingsScreen>:
+    canvas.before:
+        Color:
+            rgba: BG_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    ScrollView:
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(20)
+            spacing: dp(15)
+            
+            Label:
+                text: 'НАСТРОЙКИ'
+                font_size: dp(28)
+                bold: True
+                color: PRIMARY_COLOR
+                size_hint_y: None
+                height: dp(40)
+            
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+                
+                Label:
+                    text: 'Громкость музыки:'
+                    size_hint_x: 0.6
+                    font_size: dp(18)
+                
+                Slider:
+                    id: music_slider
+                    size_hint_x: 0.4
+                    min: 0
+                    max: 1
+                    value: root.game_screen.sound_manager.music_volume
+                    on_value: root.game_screen.sound_manager.music_volume = self.value; \
+                              if root.game_screen.sound_manager.background_music: \
+                              root.game_screen.sound_manager.background_music.volume = self.value
+            
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+                
+                Label:
+                    text: 'Громкость звуков:'
+                    size_hint_x: 0.6
+                    font_size: dp(18)
+                
+                Slider:
+                    id: sound_slider
+                    size_hint_x: 0.4
+                    min: 0
+                    max: 1
+                    value: root.game_screen.sound_manager.sound_volume
+            
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+                
+                Label:
+                    text: 'Музыка:'
+                    size_hint_x: 0.6
+                    font_size: dp(18)
+                
+                Switch:
+                    id: music_switch
+                    size_hint_x: 0.4
+                    active: root.game_screen.sound_manager.music_enabled
+                    on_active: root.game_screen.sound_manager.music_enabled = self.active; \
+                               if not self.active: root.game_screen.sound_manager.stop_music()
+            
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+                
+                Label:
+                    text: 'Звуки:'
+                    size_hint_x: 0.6
+                    font_size: dp(18)
+                
+                Switch:
+                    id: sound_switch
+                    size_hint_x: 0.4
+                    active: root.game_screen.sound_manager.sounds_enabled
+            
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+                
+                Label:
+                    text: 'Скорость текста:'
+                    size_hint_x: 0.6
+                    font_size: dp(18)
+                
+                Slider:
+                    id: text_speed_slider
+                    size_hint_x: 0.4
+                    min: 10
+                    max: 100
+                    value: 30
+                    on_value: root.game_screen.dialogue_animator.speed = self.value
+            
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(120)
+                spacing: dp(10)
+                padding: dp(20, 0, 0, 0)
+                
+                CustomButton:
+                    text: 'СОХРАНИТЬ ИГРУ'
+                    background_color: PRIMARY_COLOR
+                    on_press: root.game_screen.save_game()
+                
+                CustomButton:
+                    text: 'ЗАГРУЗИТЬ ИГРУ'
+                    background_color: PRIMARY_COLOR
+                    on_press: 
+                        if root.game_screen.load_game(): 
+                            app.root = root.game_screen
+                
+                CustomButton:
+                    text: 'В ГЛАВНОЕ МЕНЮ'
+                    background_color: SECONDARY_COLOR
+                    on_press: app.show_menu()
+
+ScreenManager:
+    id: screen_manager
+    
+    GameScreen:
+        id: game_screen
+        name: 'game'
+    
+    MainMenuScreen:
+        id: main_menu
+        name: 'menu'
+        game_screen: game_screen
+    
+    SettingsScreen:
+        id: settings
+        name: 'settings'
+        game_screen: game_screen

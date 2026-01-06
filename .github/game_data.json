@@ -1,0 +1,291 @@
+{
+  "scenes": {
+    "start": {
+      "background": "backgrounds/city.jpg",
+      "music": "ambient_city.mp3",
+      "dialogues": [
+        {
+          "character": "Алиса",
+          "text": "Привет! Рада тебя видеть. Ты как раз вовремя! Сегодня происходит нечто особенное.",
+          "expression": "happy"
+        },
+        {
+          "character": "Алиса",
+          "text": "В нашем городе начался ежегодный фестиваль. Куда хочешь пойти сначала?",
+          "expression": "neutral"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Пойдем на центральную площадь",
+          "next_scene": "square",
+          "effects": {
+            "relationship_alice": 10,
+            "reputation": 5,
+            "money": -10
+          }
+        },
+        {
+          "text": "Давай прогуляемся по парку",
+          "next_scene": "park",
+          "effects": {
+            "relationship_alice": 15,
+            "karma": 10
+          }
+        },
+        {
+          "text": "Может, зайдем в кафе?",
+          "next_scene": "cafe",
+          "effects": {
+            "relationship_alice": 5,
+            "money": -30
+          }
+        }
+      ]
+    },
+    "square": {
+      "background": "backgrounds/square.jpg",
+      "music": "festival_music.mp3",
+      "dialogues": [
+        {
+          "character": "Алиса",
+          "text": "Вау! Посмотри, сколько здесь людей! Музыка, танцы, еда... Это потрясающе!",
+          "expression": "happy"
+        },
+        {
+          "character": "Боб",
+          "text": "О, Алиса! И ты привела друга? Привет, я Боб, организатор фестиваля.",
+          "expression": "neutral"
+        },
+        {
+          "character": "Боб",
+          "text": "У нас сегодня конкурс талантов с призовым фондом. Хотите поучаствовать?",
+          "expression": "happy"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Конечно, мы участвуем!",
+          "next_scene": "talent_show",
+          "effects": {
+            "relationship_alice": 20,
+            "relationship_bob": 15,
+            "reputation": 10
+          }
+        },
+        {
+          "text": "Нет, лучше просто посмотрим",
+          "next_scene": "spectator",
+          "effects": {
+            "relationship_alice": -5,
+            "relationship_bob": -5,
+            "karma": 5
+          }
+        },
+        {
+          "text": "У нас другие планы, извините",
+          "next_scene": "leave_square",
+          "effects": {
+            "relationship_alice": -10,
+            "relationship_bob": -10,
+            "reputation": -5
+          }
+        }
+      ]
+    },
+    "park": {
+      "background": "backgrounds/park.jpg",
+      "music": "ambient_nature.mp3",
+      "dialogues": [
+        {
+          "character": "Алиса",
+          "text": "Как тихо и спокойно... Совсем не похоже на шумную площадь.",
+          "expression": "happy"
+        },
+        {
+          "character": "Алиса",
+          "text": "Смотри, там кто-то плачет... Кажется, это маленькая девочка.",
+          "expression": "sad"
+        },
+        {
+          "character": "Девочка",
+          "text": "Хнык... Я потеряла свою куклу... Мама подарила её мне на день рождения...",
+          "expression": "sad"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Помочь найти куклу",
+          "next_scene": "help_girl",
+          "effects": {
+            "relationship_alice": 25,
+            "karma": 20,
+            "reputation": 15
+          }
+        },
+        {
+          "text": "Предложить купить новую куклу",
+          "next_scene": "buy_doll",
+          "effects": {
+            "relationship_alice": 10,
+            "money": -50,
+            "karma": 10
+          }
+        },
+        {
+          "text": "Пройти мимо",
+          "next_scene": "ignore_girl",
+          "effects": {
+            "relationship_alice": -20,
+            "karma": -15,
+            "reputation": -10
+          }
+        }
+      ]
+    },
+    "cafe": {
+      "background": "backgrounds/cafe.jpg",
+      "music": "cafe_jazz.mp3",
+      "dialogues": [
+        {
+          "character": "Алиса",
+          "text": "Ммм, пахнет свежим кофе и выпечкой! Я обожаю эту атмосферу.",
+          "expression": "happy"
+        },
+        {
+          "character": "Официант",
+          "text": "Добро пожаловать! Что будете заказывать? У нас сегодня специальное предложение.",
+          "expression": "neutral"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Заказать десерт для Алисы",
+          "next_scene": "dessert",
+          "effects": {
+            "relationship_alice": 30,
+            "money": -40
+          }
+        },
+        {
+          "text": "Разделить счёт пополам",
+          "next_scene": "split_bill",
+          "effects": {
+            "relationship_alice": 0,
+            "money": -25
+          }
+        },
+        {
+          "text": "Сказать, что не голоден",
+          "next_scene": "not_hungry",
+          "effects": {
+            "relationship_alice": -15,
+            "reputation": -5
+          }
+        }
+      ]
+    },
+    "talent_show": {
+      "background": "backgrounds/stage.jpg",
+      "music": "talent_show.mp3",
+      "dialogues": [
+        {
+          "character": "Боб",
+          "text": "Отлично! Записываю вас в список участников. Что будете показывать?",
+          "expression": "happy"
+        }
+      ],
+      "choices": [
+        {
+          "text": "Спеть песню дуэтом",
+          "next_scene": "sing_duet",
+          "effects": {
+            "relationship_alice": 40,
+            "reputation": 25,
+            "money": 100
+          }
+        },
+        {
+          "text": "Рассказать шутки",
+          "next_scene": "tell_jokes",
+          "effects": {
+            "relationship_alice": 20,
+            "reputation": 15,
+            "money": 50
+          }
+        },
+        {
+          "text": "Испугаться и отказаться",
+          "next_scene": "chicken_out",
+          "effects": {
+            "relationship_alice": -30,
+            "reputation": -20
+          }
+        }
+      ]
+    }
+  },
+  "characters": {
+    "Алиса": {
+      "images": {
+        "happy": "characters/alice_happy.png",
+        "neutral": "characters/alice_neutral.png",
+        "sad": "characters/alice_sad.png",
+        "angry": "characters/alice_angry.png"
+      },
+      "color": "#FF6B9D",
+      "description": "Оптимистичная и дружелюбная девушка, любит приключения."
+    },
+    "Боб": {
+      "images": {
+        "happy": "characters/bob_happy.png",
+        "neutral": "characters/bob_neutral.png",
+        "angry": "characters/bob_angry.png"
+      },
+      "color": "#4A90E2",
+      "description": "Организатор фестиваля, энергичный и предприимчивый."
+    },
+    "Девочка": {
+      "images": {
+        "happy": "characters/girl_happy.png",
+        "sad": "characters/girl_sad.png"
+      },
+      "color": "#9B59B6",
+      "description": "Маленькая девочка, потерявшая куклу."
+    },
+    "Официант": {
+      "images": {
+        "neutral": "characters/waiter.png"
+      },
+      "color": "#34495E",
+      "description": "Вежливый официант в кафе."
+    }
+  },
+  "endings": {
+    "good": {
+      "name": "Счастливый конец",
+      "description": "Вы нашли новых друзей и получили массу положительных эмоций!",
+      "requirements": {
+        "relationship_alice": 50,
+        "reputation": 30,
+        "karma": 40
+      }
+    },
+    "neutral": {
+      "name": "Обычный день",
+      "description": "День прошёл неплохо, но ничего особенного не произошло.",
+      "requirements": {
+        "relationship_alice": 0,
+        "reputation": 0
+      }
+    },
+    "bad": {
+      "name": "Одинокий вечер",
+      "description": "Вы обидели всех и остались в одиночестве...",
+      "requirements": {
+        "relationship_alice": -50,
+        "reputation": -30
+      }
+    }
+  }
+}
